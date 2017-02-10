@@ -10,6 +10,7 @@ const FILE_MASK: [Bitboard; 8] = [
     Bitboard(0x4040404040404040),
     Bitboard(0x8080808080808080),
 ];
+
 const RANK_MASK: [Bitboard; 8] = [
     Bitboard(0x00000000000000FF),
     Bitboard(0x000000000000FF00),
@@ -20,6 +21,7 @@ const RANK_MASK: [Bitboard; 8] = [
     Bitboard(0x00FF000000000000),
     Bitboard(0xFF00000000000000),
 ];
+
 /* Diagonal enumerations based off
  * https://chessprogramming.wikispaces.com/diagonals
  * https://chessprogramming.wikispaces.com/Anti-Diagonals
@@ -42,6 +44,7 @@ const DIAGONAL_MASK: [Bitboard; 16] = [
     Bitboard(0x0100000000000000),
     Bitboard(0x0000000000000000),
 ];
+
 const ANTI_DIAGONAL_MASK: [Bitboard; 16] = [
     Bitboard(0x0000000000000001),
     Bitboard(0x0000000000000102),
@@ -60,15 +63,6 @@ const ANTI_DIAGONAL_MASK: [Bitboard; 16] = [
     Bitboard(0x8000000000000000),
     Bitboard(0x0000000000000000),
 ];
-
-//#[test]
-//fn print_masks()
-//{
-//    for m in DIAGONAL_MASK.iter()
-//    {
-//        println!("{:?}", m);
-//    }
-//}
 
 /* We are going to use a bitboard scheme from here:
  * https://chessprogramming.wikispaces.com/Square+Mapping+Considerations
