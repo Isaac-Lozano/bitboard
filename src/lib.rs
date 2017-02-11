@@ -22,10 +22,10 @@ const RANK_MASK: [Bitboard; 8] = [
     Bitboard(0xFF00000000000000),
 ];
 
-/* Diagonal enumerations based off
- * https://chessprogramming.wikispaces.com/diagonals
- * https://chessprogramming.wikispaces.com/Anti-Diagonals
- */
+// Diagonal enumerations based off
+// https://chessprogramming.wikispaces.com/diagonals
+// https://chessprogramming.wikispaces.com/Anti-Diagonals
+
 const DIAGONAL_MASK: [Bitboard; 16] = [
     Bitboard(0x0000000000000080),
     Bitboard(0x0000000000008040),
@@ -64,13 +64,13 @@ const ANTI_DIAGONAL_MASK: [Bitboard; 16] = [
     Bitboard(0x0000000000000000),
 ];
 
-/* We are going to use a bitboard scheme from here:
- * https://chessprogramming.wikispaces.com/Square+Mapping+Considerations
- * We are using LERF (Little-Endian Rank-File) */
+// We are going to use a bitboard scheme from here:
+// https://chessprogramming.wikispaces.com/Square+Mapping+Considerations
+// We are using LERF (Little-Endian Rank-File)
 #[derive(Clone,Copy,PartialEq,Eq,Hash)]
 pub struct Bitboard(u64);
 
-/* TODO: use self or &self for functions? */
+// TODO: use self or &self for functions?
 impl Bitboard
 {
     pub fn new(r7: u64, r6: u64, r5: u64, r4: u64, r3: u64, r2: u64, r1: u64, r0: u64) -> Bitboard
@@ -96,10 +96,10 @@ impl Bitboard
         self.0 == 0
     }
 
-    /* Should make a BitboardPiece and use .contains() instead */
+    // Should make a BitboardPiece and use .contains() instead
     pub fn is_set(&self, x: u32, y: u32) -> bool
     {
-        /* self.0 & ((1 << (y * 8)) << x) != 0 */
+        // self.0 & ((1 << (y * 8)) << x) != 0
         self.0 & (1 << (y * 8 + x)) != 0
     }
 
@@ -138,9 +138,8 @@ impl Bitboard
         Bitboard(self.0.swap_bytes())
     }
 
-    /* Algorithm from
-     * https://chessprogramming.wikispaces.com/Flipping+Mirroring+and+Rotating
-     */
+    // Algorithm from
+    // https://chessprogramming.wikispaces.com/Flipping+Mirroring+and+Rotating
     pub fn mirror_horizontal(self) -> Bitboard
     {
         const K1: u64 = 0x5555555555555555;
@@ -155,13 +154,13 @@ impl Bitboard
 
     pub fn positive_horizontal_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         Bitboard(self.0 ^ (self.0 - 2 * piece.0)).intersect(RANK_MASK[piece.rank()])
     }
 
     pub fn negative_horizontal_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         let mirror_board = self.mirror_horizontal();
         let mirror_piece = piece.mirror_horizontal();
         Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).mirror_horizontal()
@@ -178,14 +177,14 @@ impl Bitboard
 
     pub fn positive_vertical_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         let blockers = self.intersect(FILE_MASK[piece.file()]);
         Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(2 * piece.0))).intersect(FILE_MASK[piece.file()])
     }
 
     pub fn negative_vertical_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         let mirror_board = self.intersect(FILE_MASK[piece.file()]).flip_vertical();
         let mirror_piece = piece.flip_vertical();
         Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).flip_vertical()
@@ -203,14 +202,14 @@ impl Bitboard
 
     pub fn positive_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         let blockers = self.intersect(DIAGONAL_MASK[piece.diagonal()]);
         Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(2 * piece.0))).intersect(DIAGONAL_MASK[piece.diagonal()])
     }
 
     pub fn negative_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         let mirror_board = self.intersect(DIAGONAL_MASK[piece.diagonal()]).flip_vertical();
         let mirror_piece = piece.flip_vertical();
         Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).flip_vertical()
@@ -228,14 +227,14 @@ impl Bitboard
 
     pub fn positive_anti_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         let blockers = self.intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()]);
         Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(2 * piece.0))).intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()])
     }
 
     pub fn negative_anti_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
     {
-        /* TODO: mask row */
+        // TODO: mask row
         let mirror_board = self.intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()]).flip_vertical();
         let mirror_piece = piece.flip_vertical();
         Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).flip_vertical()
@@ -312,10 +311,10 @@ impl Iterator for BitboardPieces
     {
         if self.0 != 0
         {
-            /* Get lsb */
+            // Get lsb
             let lsb = ((self.0 as i64) & (self.0 as i64).wrapping_neg()) as u64;
 
-            /* Remove lsb from Bitboard */
+            // Remove lsb from Bitboard
             self.0 &= self.0 - 1;
 
             Some(BitboardPiece(lsb))
@@ -327,7 +326,7 @@ impl Iterator for BitboardPieces
     }
 }
 
-/* Guarenteed to have only one bit set */
+// Guarenteed to have only one bit set
 #[derive(Clone,Copy,PartialEq,Eq)]
 pub struct BitboardPiece(u64);
 
@@ -353,18 +352,16 @@ impl BitboardPiece
         (self.square() >> 3) as usize
     }
 
-    /* TODO: Not sure if this should be public
-     * because differing ways to enumerate.
-     */
+    // TODO: Not sure if this should be public
+    // because differing ways to enumerate.
     fn diagonal(&self) -> usize
     {
         let square = self.square();
         ((7 + (square >> 3)) - (square & 7))
     }
 
-    /* TODO: Not sure if this should be public
-     * because differing ways to enumerate.
-     */
+    // TODO: Not sure if this should be public
+    // because differing ways to enumerate.
     fn anti_diagonal(&self) -> usize
     {
         let square = self.square();
@@ -399,9 +396,8 @@ impl BitboardPiece
         BitboardPiece(self.0.swap_bytes())
     }
 
-    /* Algorithm from
-     * https://chessprogramming.wikispaces.com/Flipping+Mirroring+and+Rotating
-     */
+    // Algorithm from
+    // https://chessprogramming.wikispaces.com/Flipping+Mirroring+and+Rotating
     pub fn mirror_horizontal(self) -> BitboardPiece
     {
         const K1: u64 = 0x5555555555555555;
@@ -494,7 +490,7 @@ mod tests
                          .nth(14)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -523,7 +519,7 @@ mod tests
                          .nth(14)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -552,7 +548,7 @@ mod tests
                          .nth(14)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -581,7 +577,7 @@ mod tests
                          .nth(14)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -610,7 +606,7 @@ mod tests
                          .nth(12)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -639,7 +635,7 @@ mod tests
                          .nth(12)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -668,7 +664,7 @@ mod tests
                          .nth(12)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b01000000,
@@ -697,7 +693,7 @@ mod tests
                          .nth(12)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -726,7 +722,7 @@ mod tests
                          .nth(12)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b01000000,
@@ -755,7 +751,7 @@ mod tests
                          .nth(11)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -784,7 +780,7 @@ mod tests
                          .nth(11)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
@@ -813,7 +809,7 @@ mod tests
                          .nth(11)
                          .unwrap();
 
-        /* Make sure we got the correct piece */
+        // Make sure we got the correct piece
         assert_eq!(piece, BitboardPiece::from_square(26));
 
         let ray = Bitboard::new(0b00000000,
