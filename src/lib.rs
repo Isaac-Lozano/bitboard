@@ -263,6 +263,13 @@ impl Bitboard
         }
     }
 
+    pub fn to_piece(self) -> BitboardPiece
+    {
+        // assert self.0 is a power of 2 (only one bit set)
+        assert!(self.0 != 0 && (self.0 & (self.0 - 1)) == 0);
+        BitboardPiece(self.0)
+    }
+
     pub fn pieces(self) -> BitboardPieces
     {
         BitboardPieces(self.0)
