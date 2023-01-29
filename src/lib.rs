@@ -155,7 +155,7 @@ impl Bitboard
     pub fn positive_horizontal_ray(self, piece: BitboardPiece) -> Bitboard
     {
         // TODO: mask row
-        Bitboard(self.0 ^ (self.0 - 2 * piece.0)).intersect(RANK_MASK[piece.rank()])
+        Bitboard(self.0 ^ (self.0 - (piece.0 << 1))).intersect(RANK_MASK[piece.rank()])
     }
 
     pub fn negative_horizontal_ray(self, piece: BitboardPiece) -> Bitboard
@@ -163,7 +163,7 @@ impl Bitboard
         // TODO: mask row
         let mirror_board = self.mirror_horizontal();
         let mirror_piece = piece.mirror_horizontal();
-        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).mirror_horizontal()
+        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(mirror_piece.0 << 1))).mirror_horizontal()
                                                                         .intersect(RANK_MASK[piece.rank()])
     }
 
@@ -171,15 +171,15 @@ impl Bitboard
     {
         let o_prime = self.mirror_horizontal();
         let r_prime = piece.mirror_horizontal();
-        let temp = Bitboard(o_prime.0.wrapping_sub(2 * r_prime.0)).mirror_horizontal();
-        Bitboard((self.0.wrapping_sub(2 * piece.0)) ^ temp.0).intersect(RANK_MASK[piece.rank()])
+        let temp = Bitboard(o_prime.0.wrapping_sub(r_prime.0 << 1)).mirror_horizontal();
+        Bitboard((self.0.wrapping_sub(piece.0 << 1)) ^ temp.0).intersect(RANK_MASK[piece.rank()])
     }
 
     pub fn positive_vertical_ray(self, piece: BitboardPiece) -> Bitboard
     {
         // TODO: mask row
         let blockers = self.intersect(FILE_MASK[piece.file()]);
-        Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(2 * piece.0))).intersect(FILE_MASK[piece.file()])
+        Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(piece.0 << 1))).intersect(FILE_MASK[piece.file()])
     }
 
     pub fn negative_vertical_ray(self, piece: BitboardPiece) -> Bitboard
@@ -187,7 +187,7 @@ impl Bitboard
         // TODO: mask row
         let mirror_board = self.intersect(FILE_MASK[piece.file()]).flip_vertical();
         let mirror_piece = piece.flip_vertical();
-        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).flip_vertical()
+        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(mirror_piece.0 << 1))).flip_vertical()
                                                                         .intersect(FILE_MASK[piece.file()])
     }
 
@@ -196,15 +196,15 @@ impl Bitboard
         let o = self.intersect(FILE_MASK[piece.file()]);
         let o_prime = self.intersect(FILE_MASK[piece.file()]).flip_vertical();
         let r_prime = piece.flip_vertical();
-        let temp = Bitboard(o_prime.0.wrapping_sub(2 * r_prime.0)).flip_vertical();
-        Bitboard((o.0.wrapping_sub(2 * piece.0)) ^ temp.0).intersect(FILE_MASK[piece.file()])
+        let temp = Bitboard(o_prime.0.wrapping_sub(r_prime.0 << 1)).flip_vertical();
+        Bitboard((o.0.wrapping_sub(piece.0 << 1)) ^ temp.0).intersect(FILE_MASK[piece.file()])
     }
 
     pub fn positive_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
     {
         // TODO: mask row
         let blockers = self.intersect(DIAGONAL_MASK[piece.diagonal()]);
-        Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(2 * piece.0))).intersect(DIAGONAL_MASK[piece.diagonal()])
+        Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(piece.0 << 1))).intersect(DIAGONAL_MASK[piece.diagonal()])
     }
 
     pub fn negative_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
@@ -212,7 +212,7 @@ impl Bitboard
         // TODO: mask row
         let mirror_board = self.intersect(DIAGONAL_MASK[piece.diagonal()]).flip_vertical();
         let mirror_piece = piece.flip_vertical();
-        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).flip_vertical()
+        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(mirror_piece.0 << 1))).flip_vertical()
                                                                         .intersect(DIAGONAL_MASK[piece.diagonal()])
     }
 
@@ -221,15 +221,15 @@ impl Bitboard
         let o = self.intersect(DIAGONAL_MASK[piece.diagonal()]);
         let o_prime = self.intersect(DIAGONAL_MASK[piece.diagonal()]).flip_vertical();
         let r_prime = piece.flip_vertical();
-        let temp = Bitboard(o_prime.0.wrapping_sub(2 * r_prime.0)).flip_vertical();
-        Bitboard((o.0.wrapping_sub(2 * piece.0)) ^ temp.0).intersect(DIAGONAL_MASK[piece.diagonal()])
+        let temp = Bitboard(o_prime.0.wrapping_sub(r_prime.0 << 1)).flip_vertical();
+        Bitboard((o.0.wrapping_sub(piece.0 << 1)) ^ temp.0).intersect(DIAGONAL_MASK[piece.diagonal()])
     }
 
     pub fn positive_anti_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
     {
         // TODO: mask row
         let blockers = self.intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()]);
-        Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(2 * piece.0))).intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()])
+        Bitboard(blockers.0 ^ (blockers.0.wrapping_sub(piece.0 << 1))).intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()])
     }
 
     pub fn negative_anti_diagonal_ray(self, piece: BitboardPiece) -> Bitboard
@@ -237,7 +237,7 @@ impl Bitboard
         // TODO: mask row
         let mirror_board = self.intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()]).flip_vertical();
         let mirror_piece = piece.flip_vertical();
-        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(2 * mirror_piece.0))).flip_vertical()
+        Bitboard(mirror_board.0 ^ (mirror_board.0.wrapping_sub(mirror_piece.0 << 1))).flip_vertical()
                                                                         .intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()])
     }
 
@@ -246,8 +246,8 @@ impl Bitboard
         let o = self.intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()]);
         let o_prime = self.intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()]).flip_vertical();
         let r_prime = piece.flip_vertical();
-        let temp = Bitboard(o_prime.0.wrapping_sub(2 * r_prime.0)).flip_vertical();
-        Bitboard((o.0.wrapping_sub(2 * piece.0)) ^ temp.0).intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()])
+        let temp = Bitboard(o_prime.0.wrapping_sub(r_prime.0 << 1)).flip_vertical();
+        Bitboard((o.0.wrapping_sub(piece.0 << 1)) ^ temp.0).intersect(ANTI_DIAGONAL_MASK[piece.anti_diagonal()])
     }
 
     pub fn shift(self, x: i32, y: i32) -> Bitboard
@@ -285,7 +285,7 @@ impl fmt::Debug for Bitboard
 {
     fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result
     {
-        try!(write!(fmt, "\n"));
+        write!(fmt, "\n")?;
         for rank in 0..8
         {
             let mut mask = 1 << (8 * (7 - rank));
@@ -293,15 +293,15 @@ impl fmt::Debug for Bitboard
             {
                 if self.0 & mask != 0
                 {
-                    try!(write!(fmt, "*"));
+                    write!(fmt, "*")?;
                 }
                 else
                 {
-                    try!(write!(fmt, "."));
+                    write!(fmt, ".")?;
                 }
                 mask <<= 1;
             }
-            try!(write!(fmt, "\n"));
+            write!(fmt, "\n")?;
         }
         Ok(())
     }
@@ -364,7 +364,7 @@ impl BitboardPiece
     fn diagonal(&self) -> usize
     {
         let square = self.square();
-        ((7 + (square >> 3)) - (square & 7))
+        (7 + (square >> 3)) - (square & 7)
     }
 
     // TODO: Not sure if this should be public
@@ -372,7 +372,7 @@ impl BitboardPiece
     fn anti_diagonal(&self) -> usize
     {
         let square = self.square();
-        ((square >> 3) + (square & 7))
+        (square >> 3) + (square & 7)
     }
 
     pub fn square(&self) -> usize
